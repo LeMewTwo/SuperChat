@@ -21,6 +21,25 @@ void MainWindow(std::string msg)
 
 }
 
+WINDOW * MainWindow(std::string msg)
+{
+	int height = 50;
+	int width = 110;
+	int start_y = 1;
+	int start_x = 1; // where the cursor is going to be
+
+	//initializes a window//
+	WINDOW * win = newwin(height, width, start_y, start_x);
+	refresh(); // refreshes
+
+	//puts the window in a bordered box
+	box(win, 0,0);
+	mvwprintw(win, 1, 1, msg.c_str());
+	wrefresh(win); // refreshes window
+
+	return win;
+}
+
 
 std::string TextWindow(std::string NickName)
 {
@@ -72,12 +91,12 @@ int main(void)
 	//prints to window
 	//printw("hello world!");
 	std::string message = "Main Window";
-	MainWindow(message);
-
+	Window * MainWin = MainWindow(message);
+	
 	message = "Josh";
 	std::string send = TextWindow(message);
-	std::cout << send << std::endl;
-	
+	//std::cout << send << std::endl;
+
 	message = "Chat Window";
 	ChatWindow(message);
 
