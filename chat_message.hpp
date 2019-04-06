@@ -8,6 +8,11 @@
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
+/*
+  Didn't really touch this file.
+*/
+
+
 #ifndef CHAT_MESSAGE_HPP
 #define CHAT_MESSAGE_HPP
 
@@ -18,7 +23,9 @@
 class chat_message
 {
 public:
+  // does some important stuff i dont know how to explain //
   enum { header_length = 4 };
+  // pretty self explanitory //
   enum { max_body_length = 512 };
 
   chat_message()

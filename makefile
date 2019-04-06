@@ -6,7 +6,7 @@ CPPFLAGS=-I/usr/local/include/asio
 
 all:chat_client chat_server
 
-chat_client.o:chat_client.cpp chat_message.hpp chat_ncurses.hpp
+chat_client.o:chat_client.cpp chat_message.hpp chat_ncurses.hpp chat_login.hpp
 
 chat_server.o:chat_server.cpp chat_message.hpp
 

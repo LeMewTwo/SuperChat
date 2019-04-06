@@ -140,7 +140,7 @@ public:
 			//std::string StrSpace = " ";
 
 			// covers up the previous message //
-			mvaddch(HeightStart+1, (Title.length()+3+i),32);
+			mvaddch(HeightStart+1, (Title.length()+3+i),space);
 		}
 		// return the curser back to start of text box //
 		CurserReturn(); 
@@ -252,7 +252,7 @@ int main(void)
 		
 	}
 
-	// wait for a character then exit //
+	// exit //
 	endwin();
 	return 0;
 
