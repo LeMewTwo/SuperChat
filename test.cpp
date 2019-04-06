@@ -1,25 +1,17 @@
+/*
+Example done by Joshua Tran
+From group 5
+CSE 3310-003 spring 2019
+
+PROTOTYPE 2
+
+purpose of this program is to demonstrate the use of Ncurses
+in implementation for Methods and testing
+*/
+
 #include <ncurses.h>
 #include <iostream>
 
-
-
-void MainWindow(std::string msg)
-{
-	int height = 50;
-	int width = 110;
-	int start_y = 1;
-	int start_x = 1; // where the cursor is going to be
-
-	//initializes a window//
-	WINDOW * win = newwin(height, width, start_y, start_x);
-	refresh(); // refreshes
-
-	//puts the window in a bordered box
-	box(win, 0,0);
-	mvwprintw(win, 1, 1, msg.c_str());
-	wrefresh(win); // refreshes window
-
-}
 
 WINDOW * MainWindow(std::string msg)
 {
@@ -91,7 +83,7 @@ int main(void)
 	//prints to window
 	//printw("hello world!");
 	std::string message = "Main Window";
-	Window * MainWin = MainWindow(message);
+	WINDOW * MainWin = MainWindow(message);
 	
 	message = "Josh";
 	std::string send = TextWindow(message);
@@ -107,6 +99,7 @@ int main(void)
 	while(1)
 	{
 		getch();
+		refresh();
 	}
 
 	//closes window
