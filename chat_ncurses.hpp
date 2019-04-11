@@ -107,8 +107,8 @@ public:
 		wrefresh(Win);
 	}
 
-
-	// gets text from the text box //
+	//////////////////////////////////////////////////// ERROR WITH INPUT SOMEWHERE HERE
+	// gets text from the text box /////////////////////
 	std::string GetText()
 	{
 		// the message, size of max_body_length from //
@@ -123,6 +123,8 @@ public:
 		CurserReturn();
 		return Smsg;
 	}
+	/////////////////////////////////////////////////////
+	////////////////////////////////////////////////////ERROR WITH INPUT SOMEWHERE HERE
 
 	// moves the curser back to the text box //
 	void CurserReturn()
