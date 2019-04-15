@@ -35,7 +35,7 @@ public:
 
     // chat window initialized //
     ChatWindow ChatWin;
-    
+
   }
 
 // chat window needs to be initialized here so that //
@@ -115,7 +115,7 @@ private:
             if(read_msg_.body() != NULL)
             {
               std::string msgNcurses(read_msg_.body(), read_msg_.body_length());
-              //std::cout << msgNcurses + "!" << std::endl; // debug statement 
+              //std::cout << msgNcurses + "!" << std::endl; // debug statement
               //msgNcurses = Name + ":" + msgNcurses; // doesnt work
               ChatWin.AddMessage(msgNcurses);
             }
@@ -199,7 +199,8 @@ int main(int argc, char* argv[])
     TextWin.SetUp(NickName);
 
     //ChatWin.SetUp();// moved to inside the chat client class //
-    refresh();
+    //TextWin.WindowRefresh();
+    //refresh();
 
 
     // assuming most of this initializes the needs for the client to server //
@@ -212,15 +213,21 @@ int main(int argc, char* argv[])
     std::thread t([&io_context](){ io_context.run(); });
 
     // used to grab the line //
-    char line[chat_message::max_body_length + 1];
+    //char line[chat_message::max_body_length + 1];
+    std::string msgNcurses = "";
+    //c.ChatWin.SetUp();
     while (1)
     {
+      c.ChatWin.SetUp();
+      //c.ChatWin.WindowRefresh();
+      char line[chat_message::max_body_length + 1];
       // grabs line //
       // given initially, commented out to use ncurses //
       //std::cin.getline(line, chat_message::max_body_length + 1); // dont need no mo
-
+      TextWin.WindowRefresh();
       // get the text from user //
-      std::string msgNcurses = NickName + ":" + TextWin.GetText();
+      msgNcurses = NickName + ":" + TextWin.GetText();
+      //fflush(stdin);
       // convert msgNcurses from string to char[] //
       std::strcpy(line, msgNcurses.c_str());
       TextWin.ClearText(msgNcurses.length());
@@ -239,6 +246,7 @@ int main(int argc, char* argv[])
 
       // writes message //
       c.write(msg);
+      //printf("%d\n", msg.length());
       //std::cout << msg.body() << std::endl; // the .body() gets the string from msg, also debug statement
 
     }
