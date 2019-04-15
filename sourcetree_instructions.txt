@@ -1,0 +1,13 @@
+- Move files into saved folder (documents)
+- Changes should appear on sourcetree
+- Stage whatever you want put onto your branch
+- Commit what you stage (add comment of what you changed)
+- Push (will save stuff on github)
+
+When done with feature:
+- Hit git flow
+- Finish up feature (can uncheck/check delete branch, make sure merging with develop)
+
+To create new branch
+- Hit git flow
+
