@@ -28,7 +28,7 @@ public:
 
 	// this function initializes the window //
 	void SetUp()
-	{	
+	{
 		//initialize var//
 		getbegyx(stdscr, HeightStart, WidthStart);
 		getmaxyx(stdscr, HeightMax, WidthMax);
@@ -68,14 +68,14 @@ public:
 	std::string Title;
 
 	void SetUp(std::string NickName)
-	{	
+	{
 		//initialize var//
 		getbegyx(stdscr, HeightStart, WidthStart);
 		getmaxyx(stdscr, HeightMax, WidthMax);
-		
+
 		// These variables are set to have specific //
 		// proportions to the screen //
-		HeightStart = HeightMax - 5; 
+		HeightStart = HeightMax - 5;
 		WidthStart = WidthStart + 1;
 		HeightMax = 4; // hieght needs to be firmly set//
 		WidthMax = WidthMax - 2; // leaving some spacing for border//
@@ -83,7 +83,7 @@ public:
 		// need to replace with user information //
 		// probably need to pass that to this and //
 		// add some padding for the ":" //
-		Title = NickName + ":"; 
+		Title = NickName + ":";
 
 		// set the window //
 		Win = newwin(HeightMax,WidthMax,HeightStart,WidthStart);
@@ -95,6 +95,7 @@ public:
 		//takes in the pointer to the window//
 		//aswell as the position inside the window//
 		//and the text to display//
+
 		mvwprintw(Win, 1, 1, Title.c_str());
 
 		//sets position of the curser to text box//
@@ -146,7 +147,7 @@ public:
 			mvaddch(HeightStart+1, (Title.length()+3+i),space);
 		}
 		// return the curser back to start of text box //
-		CurserReturn(); 
+		CurserReturn();
 	}
 };
 
@@ -160,7 +161,7 @@ public:
 	int WidthMax;
 
 	// to help keep track of where we should put the messages //
-	int MessageX; 
+	int MessageX;
 	int MessageY;
 
 	// actual pointer for the window //
@@ -171,7 +172,7 @@ public:
 	std::vector<std::string> Messages;
 
 	void SetUp()
-	{	
+	{
 		//initialize var//
 		getbegyx(stdscr, HeightStart, WidthStart);
 		getmaxyx(stdscr, HeightMax, WidthMax);
@@ -189,8 +190,8 @@ public:
 		refresh();
 
 		// starting position of messages //
-		MessageY = HeightMax - 3; 
-		MessageX = WidthStart + 1; 
+		MessageY = HeightMax - 3;
+		MessageX = WidthStart + 1;
 
 		//adds the text to the window//
 		//takes in the pointer to the window//
@@ -206,7 +207,7 @@ public:
 	}
 
 	// takes in a message and pushes it to the window //
-	void AddMessage(std::string message)
+	void AddMessage(std::string message, int color)
 	{
 		// add message to box's message list //
 		Messages.push_back(message);
@@ -221,6 +222,48 @@ public:
 			// print the message //
 			// if there are multiple messages, then it will show one //
 			// after the other //
+
+			// assigns default foreground&background color to terminal
+			// text will not print w/o this
+			use_default_colors();
+
+			// allows text color to be changed
+            start_color();
+
+            // Choose text color based on user input
+            switch(color)
+            {
+            case 0:
+                init_pair(1, COLOR_BLACK, -1);
+                break;
+            case 1:
+                init_pair(1, COLOR_RED, -1);
+                break;
+            case 2:
+                init_pair(1, COLOR_GREEN, -1);
+                break;
+            case 3:
+                init_pair(1, COLOR_YELLOW, -1);
+                break;
+            case 4:
+                init_pair(1, COLOR_BLUE, -1);
+                break;
+            case 5:
+                init_pair(1, COLOR_MAGENTA, -1);
+                break;
+            case 6:
+                init_pair(1, COLOR_CYAN, -1);
+                break;
+            case 7:
+                init_pair(1, COLOR_WHITE, -1);
+                break;
+            default:
+                init_pair(1, COLOR_WHITE, -1);
+                break;
+            }
+
+            wattron(Win, COLOR_PAIR(1));
+
 			mvwprintw(Win, MessageY - i, MessageX, MsgPrint.c_str());
 			wrefresh(Win);
 		}
