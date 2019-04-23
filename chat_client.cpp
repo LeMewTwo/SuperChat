@@ -21,6 +21,8 @@ using asio::ip::tcp;
 
 typedef std::deque<chat_message> chat_message_queue;
 
+int g_Color;
+
 class chat_client
 {
 public:
@@ -35,7 +37,7 @@ public:
 
     // chat window initialized //
     ChatWindow ChatWin;
-    
+
   }
 
 // chat window needs to be initialized here so that //
@@ -115,9 +117,9 @@ private:
             if(read_msg_.body() != NULL)
             {
               std::string msgNcurses(read_msg_.body(), read_msg_.body_length());
-              //std::cout << msgNcurses + "!" << std::endl; // debug statement 
+              //std::cout << msgNcurses + "!" << std::endl; // debug statement
               //msgNcurses = Name + ":" + msgNcurses; // doesnt work
-              ChatWin.AddMessage(msgNcurses);
+              ChatWin.AddMessage(msgNcurses, g_Color);
             }
 
             do_read_header();
@@ -186,6 +188,7 @@ int main(int argc, char* argv[])
     LogWin.SetUp();
     std::string NickName;
     NickName = LogWin.GetUser();
+    g_Color = LogWin.GetColor();
     LogWin.ExitLogin();
 
 
@@ -219,7 +222,6 @@ int main(int argc, char* argv[])
       // given initially, commented out to use ncurses //
       //std::cin.getline(line, chat_message::max_body_length + 1); // dont need no mo
 
-      // get the text from user //
       std::string msgNcurses = NickName + ":" + TextWin.GetText();
       // convert msgNcurses from string to char[] //
       std::strcpy(line, msgNcurses.c_str());
