@@ -122,8 +122,10 @@ public:
 	{
 		// sets the curser to the input window //
 		move(InputYStart+1,InputXStart+1);
-		char name[11];
-		getstr(name);
+		
+		int flag;
+		char name[10]; // ***************************** fixed this to 10
+		getnstr(name, 10); // ************************* fixed this to getnstr - puts a limit of 10 chars on the nickname
 		std::string Sname = name;
 		return Sname;
 	}
