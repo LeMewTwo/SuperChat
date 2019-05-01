@@ -110,19 +110,33 @@ public:
 
 
 	// gets text from the text box //
-	std::string GetText()
+	std::string GetText(int prevMessageLength)
 	{
 		// the message, size of max_body_length from //
 		// chat_message.hpp //
-		char message[512];
+		char message[500];
 
 		// gets message from where curser is in text box //
 		getstr(message);
 
 		// convert to string //
 		std::string Smsg = message;
+
+		//fix for character appending bug//
+		int length = Smsg.length();
+		int difference = prevMessageLength - length;
+		std::string space = "";
+		if(difference > 0)
+		{
+			for(int i = 0; i < difference; i++)
+			{
+				space = space + " ";
+			}
+		}
+
+		std::string finalMessage = Smsg + space;
 		CurserReturn();
-		return Smsg;
+		return finalMessage;
 	}
 
 	// moves the curser back to the text box //
@@ -148,6 +162,13 @@ public:
 		}
 		// return the curser back to start of text box //
 		CurserReturn();
+	}
+
+	void ExitText(std::string NickName)
+	{
+		// free up the windows used //
+		delwin(Win);
+		SetUp(NickName);
 	}
 };
 

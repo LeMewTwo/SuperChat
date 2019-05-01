@@ -216,13 +216,14 @@ int main(int argc, char* argv[])
 
     // used to grab the line //
     char line[chat_message::max_body_length + 1];
+    int prevMessageLength = 0;
     while (1)
     {
       // grabs line //
       // given initially, commented out to use ncurses //
       //std::cin.getline(line, chat_message::max_body_length + 1); // dont need no mo
 
-      std::string msgNcurses = NickName + ":" + TextWin.GetText();
+      std::string msgNcurses = NickName + ":" + TextWin.GetText(prevMessageLength);
       // convert msgNcurses from string to char[] //
       std::strcpy(line, msgNcurses.c_str());
       TextWin.ClearText(msgNcurses.length());
@@ -242,7 +243,8 @@ int main(int argc, char* argv[])
       // writes message //
       c.write(msg);
       //std::cout << msg.body() << std::endl; // the .body() gets the string from msg, also debug statement
-
+      prevMessageLength = msg.body_length();
+      TextWin.CurserReturn();
     }
 
     // client cleanup //

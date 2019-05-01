@@ -26,7 +26,7 @@ public:
   // does some important stuff i dont know how to explain //
   enum { header_length = 4 };
   // pretty self explanitory //
-  enum { max_body_length = 512 };
+  enum { max_body_length = 500 };
 
   chat_message()
     : body_length_(0)
