@@ -12,6 +12,7 @@
 #include <deque>
 #include <iostream>
 #include <thread>
+#include <vector>
 #include "asio.hpp"
 #include "chat_message.hpp"
 #include "chat_ncurses.hpp"
@@ -20,6 +21,8 @@
 using asio::ip::tcp;
 
 typedef std::deque<chat_message> chat_message_queue;
+
+int g_Color;
 
 class chat_client
 {
@@ -35,12 +38,65 @@ public:
 
     // chat window initialized //
     ChatWindow ChatWin;
-    
   }
 
 // chat window needs to be initialized here so that //
 // there can be interactions between clients //
 ChatWindow ChatWin;
+
+// should hold the names of the participants //
+std::vector<std::string> Names;
+
+// list of blocked users //
+std::vector<std::string> Blocked;
+
+
+void addBlockName(std::string name)
+{
+  Blocked.push_back(name);
+}
+
+int checkNames(std::string Name)
+{
+
+  int count = Names.size();
+  int size = Name.length();
+
+  for(int i; i < count; i++)
+  {
+    if(Name == Names.at(i))
+    {
+      return 1;
+    }
+  }
+
+  if(size > 11)
+  {
+    return 2;
+  }
+
+  Names.push_back(Name);
+
+  return 0;
+}
+
+
+// fixes the bug that we had with appending the messages //
+std::string cleanMessage(std::string msg)
+{
+  std::string returnString;
+  int size = msg.length();
+  for(int i=0; i<size; i++)
+  {
+      if(msg[i] == '$')
+      {
+        break;
+      }
+      returnString += msg[i];
+  }
+  return returnString;
+}
+
 
   // does some important stuff i dont know how to explain //
   void write(const chat_message& msg)
@@ -108,16 +164,31 @@ private:
         {
           if (!ec)
           {
-            // original code that writes what is sent to the server //
-            /*std::cout.write(read_msg_.body(), read_msg_.body_length());
-            std::cout << "\n";*/
 
             if(read_msg_.body() != NULL)
             {
+              wclear(ChatWin.Win);
+              box(ChatWin.Win,0,0);
+              wrefresh(ChatWin.Win);
+
               std::string msgNcurses(read_msg_.body(), read_msg_.body_length());
-              //std::cout << msgNcurses + "!" << std::endl; // debug statement 
-              //msgNcurses = Name + ":" + msgNcurses; // doesnt work
-              ChatWin.AddMessage(msgNcurses);
+
+              std::string blockName;
+
+              int size = msgNcurses.length();
+              for(int i=0; i<size; i++)
+              {
+                  if(msgNcurses[i] == ':')
+                  {
+                    break;
+                  }
+                  blockName += msgNcurses[i];
+              }
+
+
+
+
+              ChatWin.AddMessage(msgNcurses, g_Color);
             }
 
             do_read_header();
@@ -186,9 +257,39 @@ int main(int argc, char* argv[])
     LogWin.SetUp();
     std::string NickName;
     NickName = LogWin.GetUser();
+    g_Color = LogWin.GetColor();
     LogWin.ExitLogin();
 
+    // assuming most of this initializes the needs for the client to server //
+    tcp::resolver resolver(io_context);
+    auto endpoints = resolver.resolve(argv[1], argv[2]);
+    chat_client c(io_context, endpoints);
 
+    // ERROR CHECKING FOR NICKNAME //
+    int errorStatus = c.checkNames(NickName);
+    if(errorStatus > 0)
+    {
+      std::string errorString;
+
+      if(errorStatus == 1)
+      {
+        errorString = "ERROR: Name Is Already Chosen.";
+      }else if(errorStatus == 2)
+      {
+        errorString = "ERROR: Name is longer than 10 characters.";
+      }else if(errorStatus == 3)
+      {
+        errorString = "ERROR: Number of users is at 50.";
+      }
+
+      LoginWindow LogWin;
+      LogWin.SetUp();
+      LogWin.ErrorPop(errorString);
+      NickName = LogWin.GetUser();
+      g_Color = LogWin.GetColor();
+      LogWin.ExitLogin();
+      errorStatus = c.checkNames(NickName);
+    }
 
     // initialize the window classes //
     MainWindow MainWin;
@@ -201,11 +302,6 @@ int main(int argc, char* argv[])
     //ChatWin.SetUp();// moved to inside the chat client class //
     refresh();
 
-
-    // assuming most of this initializes the needs for the client to server //
-    tcp::resolver resolver(io_context);
-    auto endpoints = resolver.resolve(argv[1], argv[2]);
-    chat_client c(io_context, endpoints);
     c.ChatWin.SetUp(); // set up chat window
 
     // runs a thread with the important thingy above //
@@ -213,17 +309,30 @@ int main(int argc, char* argv[])
 
     // used to grab the line //
     char line[chat_message::max_body_length + 1];
+    bool exit = false;
     while (1)
     {
       // grabs line //
-      // given initially, commented out to use ncurses //
-      //std::cin.getline(line, chat_message::max_body_length + 1); // dont need no mo
+      std::string Message = TextWin.GetText();
+      
+      Message = c.cleanMessage(Message);
 
-      // get the text from user //
-      std::string msgNcurses = NickName + ":" + TextWin.GetText();
+      // error checking //
+      if((Message.length()) > 500)
+      {
+        Message = "ERROR: message longer than 500 characters.";
+      }
+      if(Message == "[Exit]")
+      {
+        exit = true;
+        Message = "*Left the room*";
+      }
+
+      std::string msgNcurses = NickName + ":" + Message;
+
       // convert msgNcurses from string to char[] //
       std::strcpy(line, msgNcurses.c_str());
-      TextWin.ClearText(msgNcurses.length());
+      TextWin.ClearText();
 
       // the chat message class initialization //
       chat_message msg;
@@ -239,8 +348,12 @@ int main(int argc, char* argv[])
 
       // writes message //
       c.write(msg);
-      //std::cout << msg.body() << std::endl; // the .body() gets the string from msg, also debug statement
+      TextWin.CurserReturn();
 
+      if(exit == true)
+      {
+        break;
+      }
     }
 
     // client cleanup //
