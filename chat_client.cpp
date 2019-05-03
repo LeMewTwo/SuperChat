@@ -167,14 +167,12 @@ private:
 
             if(read_msg_.body() != NULL)
             {
-              wclear(ChatWin.Win);
-              box(ChatWin.Win,0,0);
-              wrefresh(ChatWin.Win);
-
               std::string msgNcurses(read_msg_.body(), read_msg_.body_length());
 
-              std::string blockName;
 
+              //checking if name is blocked//
+              std::string blockName;
+              bool check = true;
               int size = msgNcurses.length();
               for(int i=0; i<size; i++)
               {
@@ -184,11 +182,18 @@ private:
                   }
                   blockName += msgNcurses[i];
               }
-
-
-
-
-              ChatWin.AddMessage(msgNcurses, g_Color);
+              int count = Blocked.size();
+              for(int i; i < count; i++)
+              {
+                if(blockName == Blocked.at(i))
+                {
+                  check = false;
+                }
+              }
+              if(check == true)
+              {
+                ChatWin.AddMessage(msgNcurses, g_Color);
+              }
             }
 
             do_read_header();
@@ -315,7 +320,44 @@ int main(int argc, char* argv[])
       // grabs line //
       std::string Message = TextWin.GetText();
       
+      // cleans the message //
       Message = c.cleanMessage(Message);
+
+
+
+      // checking for block command //
+      std::string check;
+      int size = Message.length();
+      for(int i=0; i<size; i++)
+      {
+          if(Message[i] == ']')
+          {
+            check += Message[i];
+            break;
+          }
+          check += Message[i];
+      }
+      std::string blockCheck;
+      bool blockHit = false;
+      for(int i=0; i<size; i++)
+      {
+          if(Message[i] == ']')
+          {
+            blockHit = true;
+            continue;
+          }
+          if(blockHit == true)
+          {
+            blockCheck += Message[i];
+          }
+      }
+      if(check == "[Block]")
+      {
+        //Message = blockCheck;
+        c.addBlockName(blockCheck);
+        TextWin.ClearText();
+        continue;
+      }
 
       // error checking //
       if((Message.length()) > 500)

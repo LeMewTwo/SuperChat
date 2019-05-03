@@ -115,7 +115,7 @@ public:
 	{
 		// the message, size of max_body_length from //
 		// chat_message.hpp //
-		char message[700];
+		char message[1500];
 		// gets message from where curser is in text box //
 		getstr(message);
 		// convert to string //
@@ -211,7 +211,9 @@ public:
 	// takes in a message and pushes it to the window //
 	void AddMessage(std::string message, int color)
 	{
-
+      wclear(Win);
+      box(Win,0,0);
+      wrefresh(Win);
 		// add message to box's message list //
 		Messages.push_back(message);
 
