@@ -66,6 +66,7 @@ public:
 
 	// a string that will be displayed //
 	std::string Title;
+	std::string NName;
 
 	void SetUp(std::string NickName)
 	{
@@ -84,7 +85,7 @@ public:
 		// probably need to pass that to this and //
 		// add some padding for the ":" //
 		Title = NickName + ":";
-
+		NName = NickName;
 		// set the window //
 		Win = newwin(HeightMax,WidthMax,HeightStart,WidthStart);
 
@@ -114,15 +115,14 @@ public:
 	{
 		// the message, size of max_body_length from //
 		// chat_message.hpp //
-		char message[512];
-
+		char message[1500];
 		// gets message from where curser is in text box //
 		getstr(message);
-
 		// convert to string //
 		std::string Smsg = message;
+		std::string finalMessage = Smsg + "$";
 		CurserReturn();
-		return Smsg;
+		return finalMessage;
 	}
 
 	// moves the curser back to the text box //
@@ -136,18 +136,20 @@ public:
 	// clears the text box //
 	// there is an issue here though and probably in get text //
 	// when we send the text, remenesants of the previous texts still show //
-	void ClearText(int length)
+	void ClearText()
 	{
-		for(int i = 0; i < length; i++)
-		{
-			int space = 32; // int value for ascii space
-			//std::string StrSpace = " ";
+		wclear(Win);
+		//box(Win,0,0);
+		SetUp(NName);
 
-			// covers up the previous message //
-			mvaddch(HeightStart+1, (Title.length()+3+i),space);
-		}
 		// return the curser back to start of text box //
 		CurserReturn();
+	}
+
+	void ExitText()
+	{
+		// free up the windows used //
+		delwin(Win);
 	}
 };
 
@@ -209,6 +211,9 @@ public:
 	// takes in a message and pushes it to the window //
 	void AddMessage(std::string message, int color)
 	{
+      wclear(Win);
+      box(Win,0,0);
+      wrefresh(Win);
 		// add message to box's message list //
 		Messages.push_back(message);
 

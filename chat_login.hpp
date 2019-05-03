@@ -17,11 +17,18 @@ public:
 	int InputYStart;
 	int InputXStart;
 
+	// sizes of the error window //
+	int ErrorHieght;
+	int ErrorWidth;
+	int ErrorYStart;
+	int ErrorXStart;
+
 	// pointer for the windows //
 	WINDOW * Win;
 	WINDOW * InputWin;
 	WINDOW * InputWinColor;
 	WINDOW * ColorOptions;
+	WINDOW * ErrorWin;
 
 	// a string that will be displayed //
 	std::string Title;
@@ -117,15 +124,24 @@ public:
 		wrefresh(ColorOptions);
 	}
 
+	void ErrorPop(std::string error)
+	{
+		int size = error.length();
+		ErrorWin = newwin(HeightMax/6,size + 2,HeightMax/2,WidthMax/3);
+		refresh();
+		mvwprintw(ErrorWin, 1, 1, error.c_str());
+		box(ErrorWin,0,0);
+		wrefresh(ErrorWin);
+	}
+
+
 	// like get text but gets the nickname //
 	std::string GetUser()
 	{
 		// sets the curser to the input window //
 		move(InputYStart+1,InputXStart+1);
-		
-		int flag;
-		char name[10]; // ***************************** fixed this to 10
-		getnstr(name, 10); // ************************* fixed this to getnstr - puts a limit of 10 chars on the nickname
+		char name[200];
+		getstr(name);
 		std::string Sname = name;
 		return Sname;
 	}
@@ -147,5 +163,6 @@ public:
 		delwin(InputWin);
 		delwin(InputWinColor);
 		delwin(ColorOptions);
+
 	}
 };
